@@ -4,13 +4,17 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
+import { initializeAuth } from "../stores/authStore";
+import { ActivityIndicator, View } from "react-native";
+import Toast from 'react-native-toast-message';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+const RootLayout = () => {
+  const [isReady, setIsReady] = useState(false);
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -21,17 +25,32 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  useEffect(() => {
+    const init = async () => {
+      await initializeAuth();
+      setIsReady(true);
+    };
+    init();
+  }, [])
+
+  if (!loaded || !isReady) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black">
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
   }
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <Stack>
-        <Stack.Screen name="(main)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(main)" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="light" />
+      <Toast />
     </ThemeProvider>
   );
 }
+
+export default RootLayout;
