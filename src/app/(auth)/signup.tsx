@@ -16,7 +16,7 @@ import Feather from "@expo/vector-icons/Feather";
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(true);
 
   const {
     register,

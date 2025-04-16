@@ -1,7 +1,6 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Redirect, Stack } from 'expo-router';
-import useAuthStore from '@/src/stores/authStore';
+import React from "react";
+import { Redirect, Stack } from "expo-router";
+import useAuthStore from "@/src/stores/authStore";
 
 const MainLayout = () => {
   const { isAuthenticated } = useAuthStore();
@@ -12,9 +11,9 @@ const MainLayout = () => {
 
   return (
     <Stack>
-      <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
-  )
-}
+  );
+};
 
 export default MainLayout;
