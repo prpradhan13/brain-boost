@@ -1,6 +1,9 @@
 import React from "react";
 import { Redirect, Stack } from "expo-router";
 import useAuthStore from "@/src/stores/authStore";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const MainLayout = () => {
   const { isAuthenticated } = useAuthStore();
@@ -10,9 +13,12 @@ const MainLayout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <QueryClientProvider client={queryClient}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="studyModal" options={{ headerShown: false, presentation: "modal", animation: "slide_from_bottom" }} />
+      </Stack>
+    </QueryClientProvider>
   );
 };
 

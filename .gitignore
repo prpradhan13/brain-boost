@@ -3,6 +3,7 @@
 android/
 ios/
 .env
+.env.local
 
 # dependencies
 node_modules/

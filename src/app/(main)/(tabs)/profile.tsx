@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const profile = () => {
   return (
@@ -21,6 +22,9 @@ const profile = () => {
       </Pressable>
       <Pressable className="bg-[#212121] p-4 rounded-xl mt-6 w-full">
         <Text className="text-white text-xl font-semibold">Create Todo</Text>
+      </Pressable>
+      <Pressable onPress={() => router.push("/studyModal")} className="bg-[#212121] p-4 rounded-xl mt-6 w-full">
+        <Text className="text-white text-xl font-semibold">Generate Study Guide</Text>
       </Pressable>
     </SafeAreaView>
   );

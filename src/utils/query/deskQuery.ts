@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import Toast from "react-native-toast-message";
-import { DeskType } from "@/src/types/desk.types";
+import { DeskType } from "@/src/types/desk.type";
 
 export const useGetAllDesk = (userId: string) => {
     return useQuery<DeskType[]>({

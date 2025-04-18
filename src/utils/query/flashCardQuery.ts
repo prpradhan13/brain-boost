@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "../lib/supabase"
 import Toast from "react-native-toast-message";
-import { FlashCardType } from "@/src/types/desk.types";
+import { FlashCardType } from "@/src/types/desk.type";
 
 
 export const useGetFlashCardByDeskId = (deskId: string) => {
