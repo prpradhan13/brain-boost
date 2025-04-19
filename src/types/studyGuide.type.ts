@@ -17,9 +17,16 @@ export type Resource = {
   url: string;
 };
 
-export type StudyGuide = {
+export type StudyGuideType = {
   title: string;
   summary: string;
   sections: Section[];
   resources: Resource[];
 };
+
+export type StudyGuideCardType = {
+  id: number;
+  created_at: string;
+  user_id: string;
+  subject_name: string;
+}

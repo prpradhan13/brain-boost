@@ -14,6 +14,7 @@ const profile = () => {
         <Text className="text-white text-xl font-semibold">Edit Profile</Text>
       </Pressable>
       <Pressable
+        onPress={() => router.push("/createFlashCardModal")}
         className="bg-[#212121] p-4 rounded-xl mt-6 w-full"
       >
         <Text className="text-white text-xl font-semibold">
