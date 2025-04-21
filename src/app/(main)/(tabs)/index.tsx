@@ -1,4 +1,7 @@
-import { useGetAIGeneratedGuide } from "@/src/utils/query/aiGeneratedQuery";
+import {
+  useGetAIGeneratedGuide,
+  usePDFUpload,
+} from "@/src/utils/query/aiGeneratedQuery";
 import { useGetAllDesk } from "@/src/utils/query/deskQuery";
 import {
   FlatList,
@@ -6,6 +9,8 @@ import {
   RefreshControl,
   ScrollView,
   Text,
+  TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,25 +20,89 @@ import { useState } from "react";
 import SkeletonCard from "@/src/components/loaders/SkeletonCard";
 import { DeskType } from "@/src/types/desk.type";
 import { StudyGuideCardType } from "@/src/types/studyGuide.type";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [filePath, setFilePath] = useState("");
   const {
     data: deskData,
     isLoading: deskLoading,
     refetch: deskRefetch,
   } = useGetAllDesk();
-  
+
   const {
     data: aiGeneratedGuideData,
     isLoading: aiGeneratedGuideLoading,
     refetch: aiGeneratedGuideRefetch,
   } = useGetAIGeneratedGuide();
 
+  const { mutate, isPending } = usePDFUpload();
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await Promise.all([deskRefetch(), aiGeneratedGuideRefetch()]);
     setRefreshing(false);
+  };
+
+  const handlePickFile = async () => {
+    try {
+      const result: DocumentPicker.DocumentPickerResult =
+        await DocumentPicker.getDocumentAsync({
+          type: "application/pdf",
+          copyToCacheDirectory: false,
+          multiple: false,
+        });
+
+      if (result.canceled) {
+        alert("File selection cancelled");
+        return;
+      }
+
+      const pickedFile = result.assets[0];
+      const newPath = `${FileSystem.cacheDirectory}${pickedFile.name}`;
+
+      await FileSystem.copyAsync({
+        from: pickedFile.uri,
+        to: newPath,
+      });
+
+      setFileName(pickedFile.name);
+      setFilePath(newPath);
+    } catch (err) {
+      console.log("Error picking file:", err);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!filePath && !fileName) {
+      alert("Please select a file first");
+      return;
+    }
+
+    const fileInfo = {
+      fileName,
+      filePath,
+    };
+
+    mutate(
+      { fileInfo },
+      {
+        onSuccess: async () => {
+          alert("File uploaded successfully");
+          setFileName("");
+          setFilePath("");
+        },
+        onError: (error) => {
+          setFileName("");
+          setFilePath("");
+          alert("Failed to upload file");
+          console.error("Error uploading file:", error.message);
+        },
+      }
+    );
   };
 
   return (
@@ -51,7 +120,9 @@ export default function HomeScreen() {
           <Text className="text-3xl text-white font-semibold px-4">Desk</Text>
           <FlatList<DeskType>
             data={deskLoading ? new Array(3).fill(null) : deskData}
-            keyExtractor={(item, index) => item?.id?.toString?.() || `skeleton-${index}`}
+            keyExtractor={(item, index) =>
+              item?.id?.toString?.() || `skeleton-${index}`
+            }
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="gap-4 px-4 mt-2"
@@ -59,7 +130,10 @@ export default function HomeScreen() {
               deskLoading ? (
                 <SkeletonCard />
               ) : (
-                <Pressable onPress={() => router.push(`/deskCard/${item.id}`)} className="bg-[#212121] p-3 rounded-xl w-80">
+                <Pressable
+                  onPress={() => router.push(`/deskCard/${item.id}`)}
+                  className="bg-[#212121] p-3 rounded-xl w-80"
+                >
                   <Text className="text-xl font-medium text-white">
                     {item.subject_name}
                   </Text>
@@ -80,8 +154,14 @@ export default function HomeScreen() {
             Study Guides - AI
           </Text>
           <FlatList<StudyGuideCardType>
-            data={aiGeneratedGuideLoading ? new Array(3).fill(null) : aiGeneratedGuideData}
-            keyExtractor={(item, index) => item?.id?.toString?.() || `skeleton-${index}`}
+            data={
+              aiGeneratedGuideLoading
+                ? new Array(3).fill(null)
+                : aiGeneratedGuideData
+            }
+            keyExtractor={(item, index) =>
+              item?.id?.toString?.() || `skeleton-${index}`
+            }
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="gap-4 px-4 mt-2"
@@ -89,7 +169,10 @@ export default function HomeScreen() {
               aiGeneratedGuideLoading ? (
                 <SkeletonCard />
               ) : (
-                <Pressable onPress={() => router.push(`/studyGuide/${item.id}`)} className="bg-[#212121] p-3 rounded-xl w-80">
+                <Pressable
+                  onPress={() => router.push(`/studyGuide/${item.id}`)}
+                  className="bg-[#212121] p-3 rounded-xl w-80"
+                >
                   <Text className="text-xl font-medium text-white">
                     {item.subject_name}
                   </Text>
@@ -101,6 +184,34 @@ export default function HomeScreen() {
             }
           />
         </View>
+
+        <TouchableOpacity onPress={handlePickFile}>
+          <View pointerEvents="none">
+            <TextInput
+              className="bg-[#212121] p-3 rounded-xl w-80 mx-auto mt-4 text-white"
+              placeholderTextColor="#c2c2c2"
+              onChangeText={(text) => setFileName(text)}
+              value={fileName}
+              placeholder="Tap to select a file"
+              editable={false}
+            />
+          </View>
+        </TouchableOpacity>
+
+        {fileName && (
+          <View className="bg-[#212121] p-3 rounded-xl w-80 mx-auto mt-4">
+            <Text className="text-xl font-medium text-white">{fileName}</Text>
+          </View>
+        )}
+
+        <Pressable
+          onPress={handleGenerate}
+          className="bg-[#212121] p-3 rounded-xl w-80 mx-auto mt-4"
+        >
+          <Text className="text-xl font-medium text-white">
+            {isPending ? "Generating..." : "Generate"}
+          </Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );

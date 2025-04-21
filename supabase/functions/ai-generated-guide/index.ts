@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       ],
       "resources": [
         {
-          "type": "video" | "article" | "book",
+          "type": "article",
           "title": string,
           "url": string
         }
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
     - Include a total of **10 quiz questions**, spread across the 5 sections (2 questions per section).
     - Keep key points **practical, concise, and focused on real understanding**.
     - Use examples in summaries and quiz options where helpful.
-    - Include **at least 1 video, 1 article, and 1 book** in the resources.
+    - Include **at least 1 article** in the resources and make sure resorces are valid.
     
     Output Rules:
     - Return only a single JSON object (do NOT wrap in an array).
