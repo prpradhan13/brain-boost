@@ -1,6 +1,5 @@
 import { View, Text, Pressable } from "react-native";
 import React from "react";
-import { FlashCardType } from "@/src/types/desk.type";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -8,7 +7,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-const FlashCard = ({ flashCardItem }: { flashCardItem: FlashCardType }) => {
+interface FlashCardProps {
+  flashCardItem: {
+    question: string;
+    answer: string;
+  };
+}
+
+const FlashCard = ({ flashCardItem }:  FlashCardProps) => {
   const spin = useSharedValue(0);
   const frontStyle = useAnimatedStyle(() => {
     const spinValue = interpolate(spin.value, [0, 1], [0, 180]);

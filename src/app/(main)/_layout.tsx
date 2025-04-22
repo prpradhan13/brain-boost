@@ -16,8 +16,8 @@ const MainLayout = () => {
     <QueryClientProvider client={queryClient}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="studyGuide" options={{ headerShown: false }} />
         <Stack.Screen name="studyModal" options={{ headerShown: false, presentation: "modal", animation: "slide_from_bottom" }} />
-        <Stack.Screen name="studyGuide/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="createFlashCardModal" options={{ headerShown: false }} />
         <Stack.Screen name="deskCard/[deskCardId]" options={{ headerShown: false }} />
         <Stack.Screen name="studyGuideFromPdf/[id]" options={{ headerShown: false }} />

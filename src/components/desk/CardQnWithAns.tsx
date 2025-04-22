@@ -1,9 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { FlashCardType } from '@/src/types/desk.type';
 
 interface CardQnWithAnsProps {
-  cardData: FlashCardType;
+  cardData: {
+    question: string;
+    answer: string;
+  };
 }
 
 const CardQnWithAns = ({ cardData }: CardQnWithAnsProps) => {

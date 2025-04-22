@@ -1,8 +1,17 @@
-import { View, Text, ActivityIndicator, ScrollView, Linking } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  Linking,
+  Pressable,
+} from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useGetPDFGeneratedGuideById } from "@/src/utils/query/aiGeneratedQuery";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
+import { goBack } from "expo-router/build/global-state/routing";
 
 const StudyGuideFromPdf = () => {
   const { id } = useLocalSearchParams();
@@ -18,9 +27,15 @@ const StudyGuideFromPdf = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
-      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-        <Text className="text-white text-4xl font-bold px-4 pt-6">
+    <SafeAreaView className="flex-1 bg-black px-2 py-4">
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        <Pressable
+          onPress={() => router.back()}
+          className="bg-white rounded-xl w-11 h-11 justify-center items-center"
+        >
+          <Feather name="chevron-left" size={22} color="black" />
+        </Pressable>
+        <Text className="text-white text-4xl font-bold pt-6">
           {guide?.title}
         </Text>
 
@@ -79,18 +94,22 @@ const StudyGuideFromPdf = () => {
         ))}
 
         <View className="px-5 mt-8">
-          <Text className="text-white text-2xl font-bold mb-2">📘 Glossary</Text>
+          <Text className="text-white text-2xl font-bold mb-2">
+            📘 Glossary
+          </Text>
           {guide?.glossary?.map((item, i) => (
             <View key={i} className="mb-2">
               <Text className="text-white text-lg font-semibold">
                 {item.term}
               </Text>
-              <Text className="text-[#c2c2c2] text-base">{item.definition}</Text>
+              <Text className="text-[#c2c2c2] text-base">
+                {item.definition}
+              </Text>
             </View>
           ))}
         </View>
 
-        <View className="px-5 mt-8 mb-10">
+        <View className="px-5 mt-8">
           <Text className="text-white text-2xl font-bold mb-2">
             📚 Recommended Reading
           </Text>

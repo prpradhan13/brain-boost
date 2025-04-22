@@ -2,10 +2,17 @@ import { View, Text, Pressable } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import Feather from '@expo/vector-icons/Feather';
+import useAuthStore from "@/src/stores/authStore";
 
 const profile = () => {
+  const { logout } = useAuthStore();
+
   return (
-    <SafeAreaView className="flex-1 p-6 justify-center items-center">
+    <SafeAreaView className="flex-1 p-6 justify-center items-center relative">
+      <Pressable onPress={logout} className="bg-[#fff] p-2 rounded-xl absolute top-12 right-6">
+        <Feather name="log-out" size={24} color="#ef4444" />
+      </Pressable>
       <View className="w-20 h-20 bg-[#fff] rounded-full justify-center items-center">
         <Text className="text-2xl font-semibold">PP</Text>
       </View>
@@ -20,9 +27,6 @@ const profile = () => {
         <Text className="text-white text-xl font-semibold">
           Create Flashcards
         </Text>
-      </Pressable>
-      <Pressable className="bg-[#212121] p-4 rounded-xl mt-6 w-full">
-        <Text className="text-white text-xl font-semibold">Create Todo</Text>
       </Pressable>
       <Pressable onPress={() => router.push("/studyModal")} className="bg-[#212121] p-4 rounded-xl mt-6 w-full">
         <Text className="text-white text-xl font-semibold">Generate Study Guide</Text>
