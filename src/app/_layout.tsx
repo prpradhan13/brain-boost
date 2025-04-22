@@ -35,9 +35,12 @@ const RootLayout = () => {
 
   if (!loaded || !isReady) {
     return (
-      <View className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color="white" />
-      </View>
+      <ThemeProvider value={DarkTheme}>
+        <View className="flex-1 justify-center items-center bg-black">
+          <ActivityIndicator size="large" color="white" />
+        </View>
+        <StatusBar style="light" />
+      </ThemeProvider>
     );
   }
 
