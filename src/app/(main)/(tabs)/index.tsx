@@ -17,7 +17,12 @@ import { router } from "expo-router";
 import { useState } from "react";
 import SkeletonCard from "@/src/components/loaders/SkeletonCard";
 import { DeskType } from "@/src/types/desk.type";
-import { GeneratedPDFType, StudyGuideCardType } from "@/src/types/studyGuide.type";
+import {
+  GeneratedPDFType,
+  StudyGuideCardType,
+} from "@/src/types/studyGuide.type";
+import SectionTitle from "@/src/components/home/SectionTitle";
+import Card from "@/src/components/home/Card";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -41,12 +46,16 @@ export default function HomeScreen() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([deskRefetch(), aiGeneratedGuideRefetch(), aiGeneratedGuideRefetchFromPDF()]);
+    await Promise.all([
+      deskRefetch(),
+      aiGeneratedGuideRefetch(),
+      aiGeneratedGuideRefetchFromPDF(),
+    ]);
     setRefreshing(false);
   };
 
   return (
-    <SafeAreaView className="flex-1 py-6">
+    <SafeAreaView className="flex-1 bg-black">
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -56,111 +65,80 @@ export default function HomeScreen() {
           />
         }
       >
-        <View className="">
-          <Text className="text-3xl text-white font-semibold px-4">Desk</Text>
-          <FlatList<DeskType>
-            data={deskLoading ? new Array(3).fill(null) : deskData}
-            keyExtractor={(item, index) =>
-              item?.id?.toString?.() || `skeleton-${index}`
-            }
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-4 px-4 mt-2"
-            renderItem={({ item }) =>
-              deskLoading ? (
-                <SkeletonCard />
-              ) : (
-                <Pressable
-                  onPress={() => router.push(`/deskCard/${item.id}`)}
-                  className="bg-[#212121] p-3 rounded-xl w-80"
-                >
-                  <Text className="text-xl font-medium text-white">
-                    {item.subject_name}
-                  </Text>
-                  {item.description && (
-                    <Text className="text-[#c2c2c2]">{item.description}</Text>
-                  )}
-                  <Text className="mt-4 text-white">
-                    {dayjs(item.created_at).format("DD/MM/YYYY")}
-                  </Text>
-                </Pressable>
-              )
-            }
-          />
-        </View>
+        <SectionTitle title="Desk" icon="book" />
+        <FlatList
+          data={deskLoading ? new Array(3).fill(null) : deskData}
+          keyExtractor={(item, index) =>
+            item?.id?.toString?.() || `skeleton-${index}`
+          }
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-4 px-4"
+          renderItem={({ item }) =>
+            deskLoading ? (
+              <SkeletonCard />
+            ) : (
+              <Card
+                title={item.subject_name}
+                description={item.description}
+                date={item.created_at}
+                onPress={() => router.push(`/deskCard/${item.id}`)}
+              />
+            )
+          }
+        />
 
-        <View className="mt-4">
-          <Text className="text-3xl text-white font-semibold px-4">
-            Study Guides - AI
-          </Text>
-          <FlatList<StudyGuideCardType>
-            data={
-              aiGeneratedGuideLoading
-                ? new Array(3).fill(null)
-                : aiGeneratedGuideData
-            }
-            keyExtractor={(item, index) =>
-              item?.id?.toString?.() || `skeleton-${index}`
-            }
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-4 px-4 mt-2"
-            renderItem={({ item }) =>
-              aiGeneratedGuideLoading ? (
-                <SkeletonCard />
-              ) : (
-                <Pressable
-                  onPress={() => router.push(`/studyGuide/${item.id}`)}
-                  className="bg-[#212121] p-3 rounded-xl w-80"
-                >
-                  <Text className="text-xl font-medium text-white">
-                    {item.subject_name}
-                  </Text>
-                  <Text className="mt-4 text-white">
-                    {dayjs(item.created_at).format("DD/MM/YYYY")}
-                  </Text>
-                </Pressable>
-              )
-            }
-          />
-        </View>
+        <SectionTitle title="Study Guides - AI" icon="book-open" />
+        <FlatList
+          data={
+            aiGeneratedGuideLoading
+              ? new Array(3).fill(null)
+              : aiGeneratedGuideData
+          }
+          keyExtractor={(item, index) =>
+            item?.id?.toString?.() || `skeleton-${index}`
+          }
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-4 px-4"
+          renderItem={({ item }) =>
+            aiGeneratedGuideLoading ? (
+              <SkeletonCard />
+            ) : (
+              <Card
+                title={item.subject_name}
+                date={item.created_at}
+                onPress={() => router.push(`/studyGuide/${item.id}`)}
+              />
+            )
+          }
+        />
 
-        <View className="mt-4">
-          <Text className="text-3xl text-white font-semibold px-4">
-            Study Guides - PDF
-          </Text>
-          <FlatList<GeneratedPDFType>
-            data={
-              aiGeneratedGuideLoadingFromPDF
-                ? new Array(3).fill(null)
-                : aiGeneratedGuideDataFromPDF
-            }
-            keyExtractor={(item, index) =>
-              item?.id?.toString?.() || `skeleton-${index}`
-            }
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-4 px-4 mt-2"
-            renderItem={({ item }) =>
-              aiGeneratedGuideLoadingFromPDF ? (
-                <SkeletonCard />
-              ) : (
-                <Pressable
-                  onPress={() => router.push(`/studyGuideFromPdf/${item.id}`)}
-                  className="bg-[#212121] p-3 rounded-xl w-80"
-                >
-                  <Text className="text-xl font-medium text-white">
-                    {item.content.title}
-                  </Text>
-                  <Text className="mt-4 text-white">
-                    {dayjs(item.created_at).format("DD/MM/YYYY")}
-                  </Text>
-                </Pressable>
-              )
-            }
-          />
-        </View>
-
+        <SectionTitle title="Study Guides - PDF" icon="file-text" />
+        <FlatList
+          data={
+            aiGeneratedGuideLoadingFromPDF
+              ? new Array(3).fill(null)
+              : aiGeneratedGuideDataFromPDF
+          }
+          keyExtractor={(item, index) =>
+            item?.id?.toString?.() || `skeleton-${index}`
+          }
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-4 px-4 mb-10"
+          renderItem={({ item }) =>
+            aiGeneratedGuideLoadingFromPDF ? (
+              <SkeletonCard />
+            ) : (
+              <Card
+                title={item.content.title}
+                date={item.created_at}
+                onPress={() => router.push(`/studyGuideFromPdf/${item.id}`)}
+              />
+            )
+          }
+        />
       </ScrollView>
     </SafeAreaView>
   );
