@@ -30,3 +30,56 @@ export type StudyGuideCardType = {
   user_id: string;
   subject_name: string;
 }
+
+export type PDFDocumentType = {
+  id: number;
+  created_at: string;
+  created_by: string;
+  name: string;
+  storage_object_id: string;
+}
+
+type Chapter = {
+  title: string;
+  summary: string;
+  concepts: Concept[];
+  important_points: string[];
+  questions: Question[];
+};
+
+type Concept = {
+  term: string;
+  definition: string;
+  example: string;
+};
+
+type Question = {
+  question: string;
+  answer: string;
+};
+
+type GlossaryEntry = {
+  term: string;
+  definition: string;
+};
+
+type RecommendedReading = {
+  title: string;
+  type: "article";
+  url: string;
+};
+
+export type StudyMaterialType = {
+  title: string;
+  chapters: Chapter[];
+  glossary: GlossaryEntry[];
+  recommended_reading: RecommendedReading[];
+};
+
+export type GeneratedPDFType =  {
+  id: number;
+  document_id: string;
+  content: StudyMaterialType;
+  created_at: string;
+  user_id: string;
+}

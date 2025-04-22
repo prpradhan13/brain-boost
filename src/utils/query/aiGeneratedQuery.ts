@@ -2,8 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import useAuthStore from "@/src/stores/authStore";
 import {
+  GeneratedPDFType,
+  PDFDocumentType,
   StudyGuideCardType,
   StudyGuideType,
+  StudyMaterialType,
 } from "@/src/types/studyGuide.type";
 import * as Crypto from 'expo-crypto';
 import * as FileSystem from "expo-file-system";
@@ -96,5 +99,48 @@ export const usePDFUpload = () => {
         throw new Error("Failed to upload file");
       }
     }
+  });
+};
+
+export const useGetPDFGeneratedGuide = () => {
+  const { user } = useAuthStore();
+  const userId = user?.id;
+
+  return useQuery<GeneratedPDFType[]>({
+    queryKey: ["pdfGeneratedGuide", userId],
+    queryFn: async () => {
+      if (!userId) throw new Error("Unauthorized access!!");
+      const { data, error } = await supabase
+        .from("generated_content")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw new Error(error.message);
+      
+      return data || [];
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useGetPDFGeneratedGuideById = (studyGuideId: string) => {
+
+  return useQuery<StudyMaterialType>({
+    queryKey: ["pdfGeneratedGuideById", studyGuideId],
+    queryFn: async () => {
+      if (!studyGuideId) throw new Error("Cannot find study guide, Id is missing!!");
+      
+      const { data, error } = await supabase
+        .from("generated_content")
+        .select("content")
+        .eq("id", studyGuideId)
+        .single();
+
+      if (error) throw new Error(error.message);
+      
+      return data.content || {};
+    },
+    enabled: !!studyGuideId,
   });
 };

@@ -20,6 +20,7 @@ const MainLayout = () => {
         <Stack.Screen name="studyGuide/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="createFlashCardModal" options={{ headerShown: false }} />
         <Stack.Screen name="deskCard/[deskCardId]" options={{ headerShown: false }} />
+        <Stack.Screen name="studyGuideFromPdf/[id]" options={{ headerShown: false }} />
       </Stack>
     </QueryClientProvider>
   );
