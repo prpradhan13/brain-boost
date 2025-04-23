@@ -1,4 +1,10 @@
-import { View, Text, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import React from "react";
 
 interface AlertModalProps {
@@ -7,6 +13,7 @@ interface AlertModalProps {
   alertTitle: string;
   alertMessage: string;
   handleContinue: () => void;
+  pendingState?: boolean;
 }
 
 const AlertModal = ({
@@ -14,7 +21,8 @@ const AlertModal = ({
   setModalVisible,
   alertMessage,
   alertTitle,
-  handleContinue=() => {},
+  handleContinue = () => {},
+  pendingState = false,
 }: AlertModalProps) => {
   return (
     <Modal
@@ -31,21 +39,27 @@ const AlertModal = ({
           <Text className="text-black text-center">{alertMessage}</Text>
 
           <View className="flex-row mt-4">
-            <Text
-              className="text-blue-500 w-1/2 text-center text-lg font-semibold border-r border-gray-300"
+            <TouchableOpacity
+              className="w-1/2 border-r border-gray-300"
+              disabled={pendingState}
               onPress={() => {
                 handleContinue();
                 setModalVisible(false);
               }}
             >
-              Continue
-            </Text>
-            <Text
-              className="text-red-500 w-1/2 text-center text-lg font-semibold"
+              {pendingState ? (
+                <ActivityIndicator size="small" color={"#3b82f6"} />
+              ) : (
+                <Text className="text-blue-500 text-lg font-semibold text-center">Continue</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-1/2"
+              disabled={pendingState}
               onPress={() => setModalVisible(false)}
             >
-              Cancel
-            </Text>
+              <Text className="text-red-500 text-lg font-semibold text-center">Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

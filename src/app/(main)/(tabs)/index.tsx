@@ -3,17 +3,14 @@ import {
   useGetPDFGeneratedGuide,
 } from "@/src/utils/query/aiGeneratedQuery";
 import { useGetAllDesk } from "@/src/utils/query/deskQuery";
-import {
-  FlatList,
-  RefreshControl,
-  ScrollView,
-} from "react-native";
+import { FlatList, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
 import SkeletonCard from "@/src/components/loaders/SkeletonCard";
 import SectionTitle from "@/src/components/home/SectionTitle";
 import Card from "@/src/components/home/Card";
+import ListEmpty from "@/src/components/desk/ListEmpty";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -91,7 +88,12 @@ export default function HomeScreen() {
           }
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-4 px-4"
+          contentContainerClassName={`gap-4 px-4 ${
+            aiGeneratedGuideData?.length === 0 && "w-full"
+          }`}
+          ListEmptyComponent={() => (
+            <ListEmpty title="No study guides found." />
+          )}
           renderItem={({ item }) =>
             aiGeneratedGuideLoading ? (
               <SkeletonCard />

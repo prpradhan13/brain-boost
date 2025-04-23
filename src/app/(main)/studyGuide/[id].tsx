@@ -17,15 +17,20 @@ import Feather from "@expo/vector-icons/Feather";
 import AlertModal from "@/src/components/modal/AlertModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { StudyGuideCardType } from "@/src/types/studyGuide.type";
+import Toast from "react-native-toast-message";
+import useAuthStore from "@/src/stores/authStore";
 
 const StudyGuideDetails = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const { id } = useLocalSearchParams();
+  const { user } = useAuthStore();
+  const userId = user?.id;
   const guideId = Number(id);
+
+  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useGetAIGeneratedGuideById(guideId);
   const { mutate, isPending } = useDeleteAIGeneratedGuide();
-  const queryClient = useQueryClient();
 
   if (isLoading) {
     return <Text className="text-white text-center mt-10">Loading...</Text>;
@@ -43,17 +48,25 @@ const StudyGuideDetails = () => {
     mutate(guideId, {
       onSuccess: (returnedId) => {
         queryClient.setQueryData(
-          ["aiGeneratedGuide", guideId],
+          ["aiGeneratedGuide", userId],
           (oldData: StudyGuideCardType[] | undefined) => {
             if (!oldData) return [];
+            const updatedData = oldData.filter((old) => old.id !== returnedId);
 
-            return oldData.filter((guide) => guide.id !== returnedId);
+            return updatedData;
           }
         );
+        setModalVisible(false);
         router.back();
+        Toast.show({
+          type: "success",
+          text1: "Study guide removed successfully.",
+          visibilityTime: 2000,
+        });
       },
       onError: (error) => {
         alert("Error removing study guide:" + error);
+        setModalVisible(false);
       },
     });
   };
@@ -134,6 +147,7 @@ const StudyGuideDetails = () => {
             alertTitle="Remove Study Guide"
             alertMessage="Are you sure you want to remove this study guide? This action cannot be undone."
             handleContinue={handleRemoveStudyGuide}
+            pendingState={isPending}
           />
         )}
       </ScrollView>
