@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     { model: "gemini-2.0-flash-001" },
     {
       generationConfig: {
-        temperature: 0.4,
+        temperature: 0,
         topP: 0.9,
         responseMimeType: "application/json",
       },

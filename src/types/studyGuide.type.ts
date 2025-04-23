@@ -76,8 +76,8 @@ export type StudyMaterialType = {
 };
 
 export type GeneratedPDFType =  {
-  id: number;
-  document_id: string;
+  id: string;
+  document_id: number;
   content: StudyMaterialType;
   created_at: string;
   user_id: string;

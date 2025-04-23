@@ -7,17 +7,29 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { useGetPDFGeneratedGuideById } from "@/src/utils/query/aiGeneratedQuery";
+import {
+  useDeletePDFGeneratedGuide,
+  useGetPDFGeneratedGuideById,
+} from "@/src/utils/query/aiGeneratedQuery";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import AlertModal from "@/src/components/modal/AlertModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { GeneratedPDFType } from "@/src/types/studyGuide.type";
+import useAuthStore from "@/src/stores/authStore";
+import Toast from "react-native-toast-message";
 
 const StudyGuideFromPdf = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { id } = useLocalSearchParams();
-  const { data: guide, isLoading } = useGetPDFGeneratedGuideById(id as string);
+  const { id: studyGuideId } = useLocalSearchParams<{ id: string }>();
+  const { user } = useAuthStore();
+  const userId = user?.id;
+  const quryClient = useQueryClient();
+
+  const { data: guide, isLoading } = useGetPDFGeneratedGuideById(studyGuideId);
+  const { mutate, isPending } = useDeletePDFGeneratedGuide();
 
   if (isLoading) {
     return (
@@ -28,7 +40,33 @@ const StudyGuideFromPdf = () => {
     );
   }
 
-  const handleRemoveStudyGuide = () => {};
+  const handleRemoveStudyGuide = () => {
+    mutate(studyGuideId, {
+      onSuccess: (returnedId) => {
+        quryClient.setQueryData(
+          ["pdfGeneratedGuide", userId],
+          (oldData: GeneratedPDFType[] | undefined) => {
+            if (!oldData) return [];
+
+            const newData = oldData.filter((item) => item.id !== returnedId);
+
+            return newData;
+          }
+        );
+        setModalVisible(false);
+        router.back();
+        Toast.show({
+          type: "success",
+          text1: "Study guide removed successfully.",
+          visibilityTime: 2000,
+        });
+      },
+      onError: (error) => {
+        alert("Error removing pdf study guide:" + error);
+        setModalVisible(false);
+      },
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-black px-2 py-4">
@@ -42,7 +80,9 @@ const StudyGuideFromPdf = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => router.push(`studyGuideFromPdf/pdfGuideQna/${id}`)}
+            onPress={() =>
+              router.push(`studyGuideFromPdf/pdfGuideQna/${studyGuideId}`)
+            }
             className="bg-white rounded-xl w-11 h-11 justify-center items-center"
           >
             <Feather name="layers" size={22} color="black" />
@@ -145,6 +185,7 @@ const StudyGuideFromPdf = () => {
             alertTitle="Remove Study Guide"
             alertMessage="Are you sure you want to remove this study guide? This action cannot be undone."
             handleContinue={handleRemoveStudyGuide}
+            pendingState={isPending}
           />
         )}
       </ScrollView>

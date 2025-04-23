@@ -7,7 +7,7 @@ import {
   StudyGuideType,
   StudyMaterialType,
 } from "@/src/types/studyGuide.type";
-import * as Crypto from 'expo-crypto';
+import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import { decode } from "base64-arraybuffer";
 
@@ -112,7 +112,7 @@ export const usePDFUpload = () => {
         console.error("Upload error:", err);
         throw new Error("Failed to upload file");
       }
-    }
+    },
   });
 };
 
@@ -131,7 +131,7 @@ export const useGetPDFGeneratedGuide = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw new Error(error.message);
-      
+
       return data || [];
     },
     enabled: !!userId,
@@ -139,12 +139,12 @@ export const useGetPDFGeneratedGuide = () => {
 };
 
 export const useGetPDFGeneratedGuideById = (studyGuideId: string) => {
-
   return useQuery<StudyMaterialType>({
     queryKey: ["pdfGeneratedGuideById", studyGuideId],
     queryFn: async () => {
-      if (!studyGuideId) throw new Error("Cannot find study guide, Id is missing!!");
-      
+      if (!studyGuideId)
+        throw new Error("Cannot find study guide, Id is missing!!");
+
       const { data, error } = await supabase
         .from("generated_content")
         .select("content")
@@ -152,9 +152,59 @@ export const useGetPDFGeneratedGuideById = (studyGuideId: string) => {
         .single();
 
       if (error) throw new Error(error.message);
-      
+
       return data.content || {};
     },
     enabled: !!studyGuideId,
+  });
+};
+
+export const useDeletePDFGeneratedGuide = () => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: generatedContentData, error: generatedContentError } =
+        await supabase
+          .from("generated_content")
+          .delete()
+          .eq("id", id)
+          .select("document_id")
+          .maybeSingle();
+
+      if (generatedContentError) throw new Error(generatedContentError.message);
+
+      if (generatedContentData?.document_id) {
+        const { data: documentStoragePath, error: documentStoragePathError } =
+          await supabase
+            .from("documents_with_storage_path")
+            .select("*")
+            .eq("id", generatedContentData.document_id)
+            .maybeSingle();
+
+        if (documentStoragePathError)
+          throw new Error(documentStoragePathError.message);
+
+        const { error: documentsError } = await supabase
+          .from("documents")
+          .delete()
+          .eq("id", generatedContentData.document_id);
+
+        if (documentsError) throw new Error(documentsError.message);
+
+        if (documentStoragePath?.storage_object_path) {
+          console.log(
+            "Deleting file from storage:",
+            documentStoragePath.storage_object_path
+          );
+
+          const { error: storageError } = await supabase.storage
+            .from("files")
+            .remove([documentStoragePath.storage_object_path]);
+
+          if (storageError) throw new Error(storageError.message);
+        }
+      }
+
+      return id;
+    },
   });
 };

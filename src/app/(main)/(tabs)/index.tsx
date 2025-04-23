@@ -3,7 +3,7 @@ import {
   useGetPDFGeneratedGuide,
 } from "@/src/utils/query/aiGeneratedQuery";
 import { useGetAllDesk } from "@/src/utils/query/deskQuery";
-import { FlatList, RefreshControl, ScrollView, View } from "react-native";
+import { FlatList, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -119,7 +119,12 @@ export default function HomeScreen() {
           }
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-4 px-4 mb-10"
+          contentContainerClassName={`gap-4 px-4 ${
+            aiGeneratedGuideDataFromPDF?.length === 0 && "w-full"
+          }`}
+          ListEmptyComponent={() => (
+            <ListEmpty title="No study guides found." />
+          )}
           renderItem={({ item }) =>
             aiGeneratedGuideLoadingFromPDF ? (
               <SkeletonCard />
