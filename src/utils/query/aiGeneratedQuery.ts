@@ -3,7 +3,6 @@ import { supabase } from "../lib/supabase";
 import useAuthStore from "@/src/stores/authStore";
 import {
   GeneratedPDFType,
-  PDFDocumentType,
   StudyGuideCardType,
   StudyGuideType,
   StudyMaterialType,
@@ -70,6 +69,21 @@ export const useGetAIGeneratedGuideById = (studyGuideId: number) => {
       return data.study_guide;
     },
     enabled: !!studyGuideId,
+  });
+};
+
+export const useDeleteAIGeneratedGuide = () => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from("ai_generated_guide")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw new Error(error.message);
+
+      return id;
+    },
   });
 };
 

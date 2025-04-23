@@ -38,7 +38,7 @@ export type PDFDocumentType = {
   storage_object_id: string;
 }
 
-type Chapter = {
+export type Chapter = {
   title: string;
   summary: string;
   concepts: Concept[];
@@ -82,3 +82,8 @@ export type GeneratedPDFType =  {
   created_at: string;
   user_id: string;
 }
+
+export type QnA = {
+  question: string;
+  answer: string;
+};

@@ -5,22 +5,13 @@ import {
 import { useGetAllDesk } from "@/src/utils/query/deskQuery";
 import {
   FlatList,
-  Pressable,
   RefreshControl,
   ScrollView,
-  Text,
-  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import dayjs from "dayjs";
 import { router } from "expo-router";
 import { useState } from "react";
 import SkeletonCard from "@/src/components/loaders/SkeletonCard";
-import { DeskType } from "@/src/types/desk.type";
-import {
-  GeneratedPDFType,
-  StudyGuideCardType,
-} from "@/src/types/studyGuide.type";
 import SectionTitle from "@/src/components/home/SectionTitle";
 import Card from "@/src/components/home/Card";
 

@@ -1,14 +1,31 @@
-import { View, Text, ScrollView, Pressable, Linking } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { useGetAIGeneratedGuideById } from "@/src/utils/query/aiGeneratedQuery";
+import {
+  useDeleteAIGeneratedGuide,
+  useGetAIGeneratedGuideById,
+} from "@/src/utils/query/aiGeneratedQuery";
 import Feather from "@expo/vector-icons/Feather";
+import AlertModal from "@/src/components/modal/AlertModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { StudyGuideCardType } from "@/src/types/studyGuide.type";
 
 const StudyGuideDetails = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const { id } = useLocalSearchParams();
   const guideId = Number(id);
   const { data, isLoading, isError } = useGetAIGeneratedGuideById(guideId);
+  const { mutate, isPending } = useDeleteAIGeneratedGuide();
+  const queryClient = useQueryClient();
 
   if (isLoading) {
     return <Text className="text-white text-center mt-10">Loading...</Text>;
@@ -21,6 +38,25 @@ const StudyGuideDetails = () => {
       </Text>
     );
   }
+
+  const handleRemoveStudyGuide = () => {
+    mutate(guideId, {
+      onSuccess: (returnedId) => {
+        queryClient.setQueryData(
+          ["aiGeneratedGuide", guideId],
+          (oldData: StudyGuideCardType[] | undefined) => {
+            if (!oldData) return [];
+
+            return oldData.filter((guide) => guide.id !== returnedId);
+          }
+        );
+        router.back();
+      },
+      onError: (error) => {
+        alert("Error removing study guide:" + error);
+      },
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 px-2 py-4">
@@ -77,6 +113,29 @@ const StudyGuideDetails = () => {
             </View>
           ))}
         </View>
+
+        <View className="border border-[#ff0000] bg-[#ef44447b] p-4 rounded-xl mb-4">
+          <Text className="text-white font-medium text-lg">Denger zone</Text>
+          <Text className="text-[#dbdbdb]">
+            This action remove this content and it can not be undo.
+          </Text>
+
+          <TouchableOpacity
+            className="bg-[#ff0000] p-2 rounded-xl mt-4"
+            onPress={() => setModalVisible(true)}
+          >
+            <Text className="text-white text-center">Remove</Text>
+          </TouchableOpacity>
+        </View>
+        {modalVisible && (
+          <AlertModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            alertTitle="Remove Study Guide"
+            alertMessage="Are you sure you want to remove this study guide? This action cannot be undone."
+            handleContinue={handleRemoveStudyGuide}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import React from "react";
 import Animated, {
   interpolate,
@@ -39,17 +39,17 @@ const FlashCard = ({ flashCardItem }:  FlashCardProps) => {
             borderRadius: 16,
             minHeight: 240,
             width: 340,
-            justifyContent: "center",
-            alignItems: "center",
             position: "absolute",
             overflow: "hidden",
           },
           frontStyle,
         ]}
       >
-        <Text className="text-white text-xl font-semibold px-6">
-          {flashCardItem.question}
-        </Text>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
+          <Text className="text-white text-lg font-semibold">
+            {flashCardItem.question}
+          </Text>
+        </ScrollView>
         <Pressable
           className="bg-[#f50] w-full absolute bottom-0 py-3"
           onPress={() => (spin.value = spin.value === 0 ? 1 : 0)}
@@ -67,17 +67,17 @@ const FlashCard = ({ flashCardItem }:  FlashCardProps) => {
             borderRadius: 16,
             minHeight: 240,
             width: 340,
-            justifyContent: "center",
-            alignItems: "center",
             backfaceVisibility: "hidden",
             overflow: "hidden",
           },
           backStyle,
         ]}
       >
-        <Text className="text-white text-xl font-semibold px-6">
-          {flashCardItem.answer}
-        </Text>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
+          <Text className="text-white text-lg font-semibold">
+            {flashCardItem.answer}
+          </Text>
+        </ScrollView>
         <Pressable
           className="bg-[#f50] w-full absolute bottom-0 py-3"
           onPress={() => (spin.value = spin.value === 0 ? 1 : 0)}

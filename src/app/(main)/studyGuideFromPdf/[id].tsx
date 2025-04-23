@@ -5,15 +5,17 @@ import {
   ScrollView,
   Linking,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useGetPDFGeneratedGuideById } from "@/src/utils/query/aiGeneratedQuery";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { goBack } from "expo-router/build/global-state/routing";
+import AlertModal from "@/src/components/modal/AlertModal";
 
 const StudyGuideFromPdf = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const { id } = useLocalSearchParams();
   const { data: guide, isLoading } = useGetPDFGeneratedGuideById(id as string);
 
@@ -26,15 +28,27 @@ const StudyGuideFromPdf = () => {
     );
   }
 
+  const handleRemoveStudyGuide = () => {};
+
   return (
     <SafeAreaView className="flex-1 bg-black px-2 py-4">
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        <Pressable
-          onPress={() => router.back()}
-          className="bg-white rounded-xl w-11 h-11 justify-center items-center"
-        >
-          <Feather name="chevron-left" size={22} color="black" />
-        </Pressable>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="flex-row justify-between items-center">
+          <Pressable
+            onPress={() => router.back()}
+            className="bg-white rounded-xl w-11 h-11 justify-center items-center"
+          >
+            <Feather name="chevron-left" size={22} color="black" />
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.push(`studyGuideFromPdf/pdfGuideQna/${id}`)}
+            className="bg-white rounded-xl w-11 h-11 justify-center items-center"
+          >
+            <Feather name="layers" size={22} color="black" />
+          </Pressable>
+        </View>
+
         <Text className="text-white text-4xl font-bold pt-6">
           {guide?.title}
         </Text>
@@ -76,20 +90,6 @@ const StudyGuideFromPdf = () => {
                 • {point}
               </Text>
             ))}
-
-            <Text className="text-xl text-white font-semibold mt-6 mb-2">
-              ❓ Review Questions
-            </Text>
-            {chapter.questions?.map((q, qIndex) => (
-              <View key={qIndex} className="mb-3">
-                <Text className="text-[#dbdbdb] text-base font-medium">
-                  Q: {q.question}
-                </Text>
-                <Text className="text-green-600 text-base mt-1">
-                  A: {q.answer}
-                </Text>
-              </View>
-            ))}
           </View>
         ))}
 
@@ -123,6 +123,30 @@ const StudyGuideFromPdf = () => {
             </Text>
           ))}
         </View>
+
+        <View className="border border-[#ff0000] bg-[#ef44447b] p-4 rounded-xl my-4">
+          <Text className="text-white font-medium text-lg">Denger zone</Text>
+          <Text className="text-[#dbdbdb]">
+            This action remove this content and it can not be undo.
+          </Text>
+
+          <TouchableOpacity
+            className="bg-[#ff0000] p-2 rounded-xl mt-4"
+            onPress={() => setModalVisible(true)}
+          >
+            <Text className="text-white text-center">Remove</Text>
+          </TouchableOpacity>
+        </View>
+
+        {modalVisible && (
+          <AlertModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            alertTitle="Remove Study Guide"
+            alertMessage="Are you sure you want to remove this study guide? This action cannot be undone."
+            handleContinue={handleRemoveStudyGuide}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -2,22 +2,22 @@ import { View, Text, FlatList } from "react-native";
 import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { QnA, Section, StudyGuideType } from "@/src/types/studyGuide.type";
+import { Chapter, QnA, StudyMaterialType } from "@/src/types/studyGuide.type";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardQnWithAns from "@/src/components/desk/CardQnWithAns";
 import ListHeaderForQna from "@/src/components/desk/ListHeaderForQna";
 
 const GuideQnaScreen = () => {
   const { id } = useLocalSearchParams();
-  const studyGuideId = Number(id);
+  const studyGuideId = id as string;
   const queryClient = useQueryClient();
 
-  const studyGuideQueryData = queryClient.getQueryData<StudyGuideType>([
-    "aiGeneratedGuide",
+  const pdfStudyGuideQueryData = queryClient.getQueryData<StudyMaterialType>([
+    "pdfGeneratedGuideById",
     studyGuideId,
   ]);
-
-  if (!studyGuideQueryData) {
+  
+  if (!pdfStudyGuideQueryData) {
     return (
       <View className="flex-1 justify-center items-center">
         <Text className="text-white text-xl">No data found</Text>
@@ -25,9 +25,9 @@ const GuideQnaScreen = () => {
     );
   }
 
-  const extractQnA = studyGuideQueryData.sections.reduce(
-    (acc: QnA[], items: Section) => {
-      const quiz = items.quiz.map((item) => ({
+  const extractQnA = pdfStudyGuideQueryData.chapters.reduce(
+    (acc: QnA[], items: Chapter) => {
+      const quiz = items.questions.map((item) => ({
         question: item.question,
         answer: item.answer,
       }));
@@ -45,7 +45,7 @@ const GuideQnaScreen = () => {
         ListHeaderComponent={() => (
           <ListHeaderForQna
             extractQnA={extractQnA}
-            studyGuideTitle={studyGuideQueryData.title}
+            studyGuideTitle={pdfStudyGuideQueryData.title}
             onPressBack={() => router.back()}
           />
         )}
