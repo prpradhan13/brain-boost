@@ -191,11 +191,6 @@ export const useDeletePDFGeneratedGuide = () => {
         if (documentsError) throw new Error(documentsError.message);
 
         if (documentStoragePath?.storage_object_path) {
-          console.log(
-            "Deleting file from storage:",
-            documentStoragePath.storage_object_path
-          );
-
           const { error: storageError } = await supabase.storage
             .from("files")
             .remove([documentStoragePath.storage_object_path]);
