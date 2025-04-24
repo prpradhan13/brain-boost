@@ -68,6 +68,7 @@ Deno.serve(async (req) => {
   }
 
   const fileContents = await file.text();
+  console.log("File contents:", fileContents);
 
   const model = genAI.getGenerativeModel(
     { model: "gemini-2.0-flash-001" },
@@ -81,32 +82,21 @@ Deno.serve(async (req) => {
   );
 
   const studyPlanPrompt = `
-You are a study material analyzer. Read the provided content and generate a structured JSON output for a single chapter with the following format.
+You are a study material processor and content analyzer.
+Your task is to read the provided plain text content and convert it into a fully structured and comprehensive study material in strict JSON format.
 
-Strictly ensure the JSON is valid and complete. Do NOT include any Markdown or extra commentary. Return only the JSON object.
+Instructions:
+Analyze the text content provided in the variable "${fileContents}" and generate a complete and structured JSON object representing the study material. The output must follow the format below and include all relevant information found in the text.
 
-Input content: "${fileContents}"
-
-Then, create a detailed, structured JSON object that breaks the content down chapter by chapter. For each chapter, include:
-
-1. A clear title and summary.
-2. Key concepts, each with a term, definition, and example.
-3. A list of 3 to 5 important points.
-4. At least 3 to 5 review questions (can be short answer, interview answer, long answer).
-
-Also include:
-- A glossary at the end of the full document with all key terms and their definitions.
-- A list of at least 2 recommended readings (articles) with links if possible.
-
-### JSON Output Format:
-Only return the JSON object. Do not wrap in Markdown or add explanation.
+Output Format:
+Return only the following JSON structure. Do not include any extra explanation, markdown, or commentary — only the final valid JSON object.
 
 {
-  "title": string,
+  "title": string, // The main title of the study material or subject
   "chapters": [
     {
-      "title": string,
-      "summary": string,
+      "title": string, // Chapter title
+      "summary": string, // A short summary of the chapter
       "concepts": [
         {
           "term": string,
@@ -114,11 +104,11 @@ Only return the JSON object. Do not wrap in Markdown or add explanation.
           "example": string
         }
       ],
-      "important_points": string[],
+      "important_points": string[], // 3 to 5 major highlights or takeaways
       "questions": [
         {
           "question": string,
-          "answer": string
+          "answer": string // Can be short answer, interview-style, or long form
         }
       ]
     }
@@ -138,10 +128,15 @@ Only return the JSON object. Do not wrap in Markdown or add explanation.
   ]
 }
 
-### Rules:
-- Use clear language suitable for learners.
-- Do not wrap output in backticks or Markdown formatting.
-- Ensure the result is valid JSON, directly parsable.
+Guidelines:
+- Carefully read and interpret the text content.
+- Organize the information by chapters if present, or break the content into logical chapter-like sections.
+- Extract and create clearly defined concepts, important points, and questions per section. Each question's answer must be between 50 and 200 characters, no more, no less.
+- Include a glossary of terms with simple easy definitions.
+- Provide a list of recommended readings with titles and URLs (at least 2 articles).
+- Language must be clear, instructional, and suitable for learners at high school or early college level.
+- Output must be valid JSON — directly usable by parsers without modification.
+- Do not wrap anything in Markdown or code formatting.
   `;
 
   const result = await model.generateContent(studyPlanPrompt);

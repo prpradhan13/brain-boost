@@ -100,7 +100,7 @@ export const usePDFUpload = () => {
         const { error } = await supabase.storage
           .from("files")
           .upload(`${Crypto.randomUUID()}/${fileName}`, decode(base64), {
-            contentType: "application/pdf",
+            contentType: "text/plain",
             upsert: false,
           });
 

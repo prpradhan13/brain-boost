@@ -63,7 +63,7 @@ const studyModal = () => {
     try {
       const result: DocumentPicker.DocumentPickerResult =
         await DocumentPicker.getDocumentAsync({
-          type: "application/pdf",
+          type: "text/plain",
           copyToCacheDirectory: false,
           multiple: false,
         });
@@ -75,7 +75,19 @@ const studyModal = () => {
 
       const pickedFile = result.assets[0];
       const newPath = `${FileSystem.cacheDirectory}${pickedFile.name}`;
+      const fileType = pickedFile.mimeType;
+      const fileSize = pickedFile.size;
 
+      if (fileType !== "text/plain") {
+        alert("Only .txt files are allowed");
+        return;
+      }
+
+      if (fileSize && fileSize > 5 * 1024 * 1024) {
+        alert("File size exceeds 5MB limit");
+        return;
+      }
+      
       await FileSystem.copyAsync({
         from: pickedFile.uri,
         to: newPath,
@@ -186,7 +198,7 @@ const studyModal = () => {
           >
             <Feather name="plus" size={24} color="#fff" />
             <Text className="text-lg text-[#fff] font-semibold">
-              Upload PDF
+              Upload .txt
             </Text>
           </Pressable>
           <Pressable className="w-1/2 bg-[#222222] h-32 rounded-xl items-center justify-center gap-2">

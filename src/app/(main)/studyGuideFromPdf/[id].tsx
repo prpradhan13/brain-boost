@@ -89,7 +89,7 @@ const StudyGuideFromPdf = () => {
           </Pressable>
         </View>
 
-        <Text className="text-white text-4xl font-bold pt-6">
+        <Text className="text-white text-3xl font-bold pt-6">
           {guide?.title}
         </Text>
 
