@@ -13,10 +13,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="todo"
+        name="notes"
         options={{
           headerShown: false,
-          tabBarLabel: "Todo",
+          tabBarLabel: "Notes",
         }}
       />
       <Tabs.Screen

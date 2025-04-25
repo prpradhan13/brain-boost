@@ -196,13 +196,13 @@ const studyModal = () => {
             onPress={handlePickFile}
             className="w-1/2 bg-[#222222] h-32 rounded-xl items-center justify-center gap-2"
           >
-            <Feather name="plus" size={24} color="#fff" />
+            <Feather name="file-text" size={24} color="#fff" />
             <Text className="text-lg text-[#fff] font-semibold">
               Upload .txt
             </Text>
           </Pressable>
           <Pressable className="w-1/2 bg-[#222222] h-32 rounded-xl items-center justify-center gap-2">
-            <Feather name="plus" size={24} color="#fff" />
+            <Feather name="image" size={24} color="#fff" />
             <Text className="text-lg text-[#fff] font-semibold">
               Upload Image
             </Text>

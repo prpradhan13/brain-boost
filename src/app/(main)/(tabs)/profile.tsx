@@ -10,9 +10,6 @@ const profile = () => {
 
   return (
     <SafeAreaView className="flex-1 p-6 justify-center items-center relative">
-      <Pressable onPress={logout} className="bg-[#fff] p-2 rounded-xl absolute top-12 right-6">
-        <Feather name="log-out" size={24} color="#ef4444" />
-      </Pressable>
       <View className="w-20 h-20 bg-[#fff] rounded-full justify-center items-center">
         <Text className="text-2xl font-semibold">PP</Text>
       </View>
@@ -30,6 +27,10 @@ const profile = () => {
       </Pressable>
       <Pressable onPress={() => router.push("/studyModal")} className="bg-[#212121] p-4 rounded-xl mt-6 w-full">
         <Text className="text-white text-xl font-semibold">Generate Study Guide</Text>
+      </Pressable>
+      <Pressable onPress={logout} className="bg-[#212121] p-3 rounded-xl w-full mt-6 flex-row items-center justify-center gap-2">
+        <Feather name="log-out" size={22} color="#ef4444" />
+        <Text className="text-[#ef4444] text-xl font-semibold">Logout</Text>
       </Pressable>
     </SafeAreaView>
   );
