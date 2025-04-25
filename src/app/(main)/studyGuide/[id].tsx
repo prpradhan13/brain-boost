@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { StudyGuideCardType } from "@/src/types/studyGuide.type";
 import Toast from "react-native-toast-message";
 import useAuthStore from "@/src/stores/authStore";
+import DefaultLoader from "@/src/components/loaders/DefaultLoader";
 
 const StudyGuideDetails = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,9 +33,7 @@ const StudyGuideDetails = () => {
   const { data, isLoading, isError } = useGetAIGeneratedGuideById(guideId);
   const { mutate, isPending } = useDeleteAIGeneratedGuide();
 
-  if (isLoading) {
-    return <Text className="text-white text-center mt-10">Loading...</Text>;
-  }
+  if (isLoading) return <DefaultLoader />;
 
   if (isError || !data) {
     return (

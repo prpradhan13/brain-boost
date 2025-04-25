@@ -20,6 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { GeneratedPDFType } from "@/src/types/studyGuide.type";
 import useAuthStore from "@/src/stores/authStore";
 import Toast from "react-native-toast-message";
+import DefaultLoader from "@/src/components/loaders/DefaultLoader";
 
 const StudyGuideFromPdf = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,14 +32,7 @@ const StudyGuideFromPdf = () => {
   const { data: guide, isLoading } = useGetPDFGeneratedGuideById(studyGuideId);
   const { mutate, isPending } = useDeletePDFGeneratedGuide();
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color="#fff" />
-        <Text className="text-white mt-4">Loading Guide...</Text>
-      </SafeAreaView>
-    );
-  }
+  if (isLoading) return <DefaultLoader />;
 
   const handleRemoveStudyGuide = () => {
     mutate(studyGuideId, {
@@ -81,7 +75,7 @@ const StudyGuideFromPdf = () => {
 
           <Pressable
             onPress={() =>
-              router.push(`studyGuideFromPdf/pdfGuideQna/${studyGuideId}`)
+              router.push(`/studyGuideFromPdf/pdfGuideQna/${studyGuideId}`)
             }
             className="bg-white rounded-xl w-11 h-11 justify-center items-center"
           >

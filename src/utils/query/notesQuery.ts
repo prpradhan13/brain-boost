@@ -51,4 +51,49 @@ export const useCreateNote = () => {
             return data;
         }
     })
-}
+};
+
+export const useGetNoteDetails = (noteId: number) => {
+    return useQuery<NotesType>({
+        queryKey: ["note", noteId],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("notes")
+                .select("*")
+                .eq("id", noteId)
+                .single();
+
+            if (error) throw new Error(error.message);
+
+            return data || {};
+        },
+        enabled: !!noteId,
+    })
+};
+
+export const useUpdateNote = () => {
+    const { user } = useAuthStore();
+    const userId = user?.id;
+
+    return useMutation({
+        mutationFn: async (note: NoteSchema & { id: number }) => {
+            if (!userId) throw new Error("User not found");
+            const { id, title, note: noteContent } = note;
+            if (!noteContent) throw new Error("Note content is required");
+
+            const { data, error } = await supabase
+                .from("notes")
+                .update({
+                    title: title || null,
+                    note: noteContent,
+                })
+                .eq("id", id)
+                .select("*")
+                .single();
+
+            if (error) throw new Error(error.message);
+
+            return data;
+        }
+    })
+};
