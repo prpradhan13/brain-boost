@@ -1,7 +1,7 @@
 export type NotesType = {
-    id: Number;
-    title: String | null;
-    note: String;
-    created_at: String;
-    creator_id: String;
+    id: number;
+    title: string | null;
+    note: string;
+    created_at: string;
+    creator_id: string;
 }

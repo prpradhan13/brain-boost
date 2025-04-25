@@ -22,3 +22,15 @@ export const multiFlashCardSchema = z.object({
 });
 
 export type MultiFlashCardSchema = z.infer<typeof multiFlashCardSchema>;
+
+export const noteForm = z.object({
+  title: z
+  .union([
+    z.string().trim().min(1, { message: 'Title is required' }),
+    z.literal("")
+  ])
+  .optional(),
+  note: z.string().min(1, { message: 'Content is required' }).trim(),
+});
+
+export type NoteSchema = z.infer<typeof noteForm>;

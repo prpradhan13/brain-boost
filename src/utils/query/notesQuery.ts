@@ -1,7 +1,8 @@
 import useAuthStore from "@/src/stores/authStore";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import { NotesType } from "@/src/types/notes.type";
+import { NoteSchema } from "@/src/validation/form";
 
 
 export const useGetNotes = () => {
@@ -9,7 +10,7 @@ export const useGetNotes = () => {
     const userId = user?.id;
 
     return useQuery<NotesType[]>({
-        queryKey: ["notes"],
+        queryKey: ["notes", userId],
         queryFn: async () => {
             const { data, error } = await supabase
                 .from("notes")
@@ -22,5 +23,32 @@ export const useGetNotes = () => {
             return data || [];
         },
         enabled: !!userId,
+    })
+};
+
+export const useCreateNote = () => {
+    const { user } = useAuthStore();
+    const userId = user?.id;
+
+    return useMutation({
+        mutationFn: async (note: NoteSchema) => {
+            if (!userId) throw new Error("User not found");
+            const { title, note: noteContent } = note;
+            if (!noteContent) throw new Error("Note content is required");
+
+            const { data, error } = await supabase
+                .from("notes")
+                .insert({
+                    title: title || null,
+                    note: noteContent,
+                    creator_id: userId,
+                })
+                .select("*")
+                .single();
+
+            if (error) throw new Error(error.message);
+            
+            return data;
+        }
     })
 }
