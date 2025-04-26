@@ -34,6 +34,7 @@ const Login = () => {
   });
 
   const onSubmit = async (data: LoginSchema) => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,

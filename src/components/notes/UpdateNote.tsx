@@ -1,4 +1,16 @@
-import { View, Text, Alert, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ActivityIndicator,
+  Modal,
+} from "react-native";
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { NotesType } from "@/src/types/notes.type";
@@ -8,6 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateNote } from "@/src/utils/query/notesQuery";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
+import { updateStatusToast } from "@/src/utils/helpingFunction";
 
 interface UpdateNoteProps {
   noteId: number;
@@ -63,6 +77,24 @@ const UpdateNote = ({ noteId, visible, setVisible }: UpdateNoteProps) => {
   };
 
   const handleSave = (data: NoteSchema) => {
+    const initialValues = {
+      title: noteDataFromQueryCache?.title ?? "Untitled",
+      note: noteDataFromQueryCache?.note ?? "No Notes",
+    }
+
+    const noChanges = Object.keys(initialValues).every(
+      (key) => data[key as keyof NoteSchema] === initialValues[key as keyof typeof initialValues]
+    )
+
+    if (noChanges) {
+      setVisible(false);
+      updateStatusToast({
+        type: "info",
+        message: "No Changes Detect"
+      })
+      return;
+    }
+
     mutate(
       { ...data, id: noteId },
       {
@@ -72,15 +104,29 @@ const UpdateNote = ({ noteId, visible, setVisible }: UpdateNoteProps) => {
             return { ...oldData, ...returnedData };
           });
           reset();
+          setVisible(false);
+          
         },
+        onError: (error) => {
+          updateStatusToast({
+            type: "error",
+            message: "Opps! Cannot update note."
+          })
+          console.log("Error", error); 
+        }
       }
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 p-4">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View className="flex-1 p-4 bg-black">
+    <Modal
+      animationType="slide"
+      visible={visible}
+      onRequestClose={() => setVisible(false)}
+      presentationStyle="pageSheet"
+    >
+      <SafeAreaView className="flex-1 p-4 bg-black">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             className="w-full h-full"
@@ -148,9 +194,9 @@ const UpdateNote = ({ noteId, visible, setVisible }: UpdateNoteProps) => {
               )}
             </View>
           </KeyboardAvoidingView>
-        </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </Modal>
   );
 };
 

@@ -12,6 +12,7 @@ import { useGetNotes } from "@/src/utils/query/notesQuery";
 import CreateNote from "@/src/components/notes/CreateNote";
 import { NotesType } from "@/src/types/notes.type";
 import DefaultLoader from "@/src/components/loaders/DefaultLoader";
+import { router } from "expo-router";
 
 const NotesScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -33,7 +34,7 @@ const NotesScreen = () => {
         onPress={() => setCreateNoteModalOpen(true)}
         android_ripple={{ color: "#00000020" }}
       >
-        <Text className="font-medium">New note</Text>
+        <Text className="font-medium text-lg">New note</Text>
       </Pressable>
 
       {createNoteModalOpen && (
@@ -72,6 +73,7 @@ const NoteCard = ({ note }: { note: NotesType }) => {
       android_ripple={{ color: "#00000020" }}
       style={{ width: "48%", height: 200 }}
       className="bg-gray-200 rounded-xl p-3 overflow-hidden"
+      onPress={() => router.push(`/note/${note.id}`)}
     >
       <Text className="text-lg font-semibold text-black mb-1">
         {note.title?.trim() || "Untitled"}

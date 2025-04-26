@@ -6,12 +6,11 @@ import { useGetAllDesk } from "@/src/utils/query/deskQuery";
 import { FlatList, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SkeletonCard from "@/src/components/loaders/SkeletonCard";
 import SectionTitle from "@/src/components/home/SectionTitle";
 import Card from "@/src/components/home/Card";
 import ListEmpty from "@/src/components/desk/ListEmpty";
-import { supabase } from "@/src/utils/lib/supabase";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
