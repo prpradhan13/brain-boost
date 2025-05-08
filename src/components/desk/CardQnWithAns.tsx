@@ -10,8 +10,8 @@ interface CardQnWithAnsProps {
 
 const CardQnWithAns = ({ cardData }: CardQnWithAnsProps) => {
   return (
-    <View className="bg-[#212121] rounded-lg p-4">
-      <Text className="text-white text-lg font-semibold">
+    <View className="bg-[#212121] rounded-2xl p-5">
+      <Text className="text-white text-xl font-semibold">
         {cardData.question}
       </Text>
       <Text className="text-green-400 mt-2">{cardData.answer}</Text>

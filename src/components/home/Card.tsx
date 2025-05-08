@@ -16,18 +16,18 @@ const Card = ({
   return (
     <Pressable
       onPress={onPress}
-      className="bg-[#1e1e1e] rounded-2xl p-4 w-80 shadow-md shadow-black"
+      className="bg-indigo-950/50 rounded-2xl p-4 w-80 shadow-md shadow-indigo-500/10 border border-indigo-500/20"
       style={{
         elevation: 5,
       }}
     >
-      <Text className="text-xl font-semibold text-white">{title}</Text>
+      <Text className="text-xl font-semibold text-indigo-200">{title}</Text>
       {description && (
-        <Text className="text-sm text-[#b0b0b0] mt-1" numberOfLines={2}>
+        <Text className="text-sm text-indigo-300/70 mt-1" numberOfLines={2}>
           {description}
         </Text>
       )}
-      <Text className="text-xs text-gray-400 mt-4">
+      <Text className="text-xs text-indigo-400/50 mt-4">
         {dayjs(date).format("DD MMM YYYY")}
       </Text>
     </Pressable>

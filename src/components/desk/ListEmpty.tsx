@@ -3,14 +3,20 @@ import React from "react";
 
 interface ListEmptyProps {
   title?: string;
+  description?: string;
 }
 
-const ListEmpty = ({ title }: ListEmptyProps) => {
+const ListEmpty = ({ title, description }: ListEmptyProps) => {
   return (
-    <View className="w-full h-32 justify-center items-center border-2 border-gray-700 rounded-xl bg-gray-800">
-      <Text className="text-white text-lg font-semibold mb-2">
+    <View className="w-full h-32 justify-center items-center border-2 border-indigo-500/20 rounded-xl bg-indigo-950/30">
+      <Text className="text-indigo-200 text-lg font-semibold mb-2">
         {title || "No items found."}
       </Text>
+      {description && (
+        <Text className="text-indigo-300/70 text-sm text-center px-4">
+          {description}
+        </Text>
+      )}
     </View>
   );
 };

@@ -14,7 +14,7 @@ import {
   useGetPDFGeneratedGuideById,
 } from "@/src/utils/query/aiGeneratedQuery";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import AlertModal from "@/src/components/modal/AlertModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { GeneratedPDFType } from "@/src/types/studyGuide.type";
@@ -41,9 +41,7 @@ const StudyGuideFromPdf = () => {
           ["pdfGeneratedGuide", userId],
           (oldData: GeneratedPDFType[] | undefined) => {
             if (!oldData) return [];
-
             const newData = oldData.filter((item) => item.id !== returnedId);
-
             return newData;
           }
         );
@@ -63,102 +61,119 @@ const StudyGuideFromPdf = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-black px-2 py-4">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="flex-row justify-between items-center">
+    <SafeAreaView className="flex-1 bg-[#0A0A0A]">
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        className="px-4 py-6"
+      >
+        {/* Header Section */}
+        <View className="flex-row justify-between items-center mb-6">
           <Pressable
             onPress={() => router.back()}
-            className="bg-white rounded-xl w-11 h-11 justify-center items-center"
+            className="bg-[#1A1A1A] rounded-2xl w-12 h-12 justify-center items-center shadow-lg"
           >
-            <Feather name="chevron-left" size={22} color="black" />
+            <Feather name="chevron-left" size={24} color="#FFFFFF" />
           </Pressable>
 
           <Pressable
-            onPress={() =>
-              router.push(`/studyGuideFromPdf/pdfGuideQna/${studyGuideId}`)
-            }
-            className="bg-white rounded-xl w-11 h-11 justify-center items-center"
+            onPress={() => router.push(`/studyGuideFromPdf/pdfGuideQna/${studyGuideId}`)}
+            className="bg-[#1A1A1A] rounded-2xl w-12 h-12 justify-center items-center shadow-lg"
           >
-            <Feather name="layers" size={22} color="black" />
+            <Feather name="layers" size={24} color="#FFFFFF" />
           </Pressable>
         </View>
 
-        <Text className="text-white text-3xl font-bold pt-6">
+        {/* Title Section */}
+        <Text className="text-white text-4xl font-bold mb-8 leading-tight">
           {guide?.title}
         </Text>
 
+        {/* Chapters Section */}
         {guide?.chapters?.map((chapter, index) => (
           <View
             key={index}
-            className="bg-[#1e1e1e] rounded-2xl p-5 mt-6 shadow-lg"
+            className="bg-[#1A1A1A] rounded-3xl p-6 mb-6 shadow-xl"
           >
-            <Text className="text-white text-2xl font-bold mb-2">
+            <Text className="text-white text-2xl font-bold mb-4">
               {chapter.title}
             </Text>
-            <Text className="text-[#c2c2c2] text-base mb-4">
+            <Text className="text-[#B0B0B0] text-base leading-relaxed mb-6">
               {chapter.summary}
             </Text>
 
-            <Text className="text-xl text-white font-semibold mb-2">
-              🔑 Key Concepts
-            </Text>
-            {chapter.concepts?.map((concept, idx) => (
-              <View key={idx} className="mb-3">
-                <Text className="text-lg text-white font-bold">
-                  {concept.term}
-                </Text>
-                <Text className="text-[#c2c2c2] text-base">
-                  {concept.definition}
-                </Text>
-                <Text className="text-[#9e9e9e] text-sm italic mt-1">
-                  Example: {concept.example}
-                </Text>
-              </View>
-            ))}
-
-            <Text className="text-xl text-white font-semibold mt-6 mb-2">
-              📌 Important Points
-            </Text>
-            {chapter.important_points?.map((point, i) => (
-              <Text key={i} className="text-[#c2c2c2] text-base">
-                • {point}
+            <View className="bg-[#252525] rounded-2xl p-4 mb-6">
+              <Text className="text-xl text-white font-semibold mb-4 flex-row items-center">
+                <MaterialCommunityIcons name="key-variant" size={24} color="#4EA8DE" className="mr-2" />
+                Key Concepts
               </Text>
-            ))}
+              {chapter.concepts?.map((concept, idx) => (
+                <View key={idx} className="mb-4 last:mb-0">
+                  <Text className="text-lg text-white font-bold mb-1">
+                    {concept.term}
+                  </Text>
+                  <Text className="text-[#B0B0B0] text-base mb-2">
+                    {concept.definition}
+                  </Text>
+                  <Text className="text-[#808080] text-sm italic">
+                    Example: {concept.example}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            <View className="bg-[#252525] rounded-2xl p-4">
+              <Text className="text-xl text-white font-semibold mb-4 flex-row items-center">
+                <MaterialCommunityIcons name="pin" size={24} color="#4EA8DE" className="mr-2" />
+                Important Points
+              </Text>
+              {chapter.important_points?.map((point, i) => (
+                <Text key={i} className="text-[#B0B0B0] text-base mb-2 leading-relaxed">
+                  • {point}
+                </Text>
+              ))}
+            </View>
           </View>
         ))}
 
-        <View className="px-5 mt-8">
-          <Text className="text-white text-2xl font-bold mb-2">
-            📘 Glossary
+        {/* Glossary Section */}
+        <View className="bg-[#1A1A1A] rounded-3xl p-6 mb-6">
+          <Text className="text-2xl text-white font-bold mb-4 flex-row items-center">
+            <MaterialCommunityIcons name="book-open-variant" size={28} color="#4EA8DE" className="mr-2" />
+            Glossary
           </Text>
           {guide?.glossary?.map((item, i) => (
-            <View key={i} className="mb-2">
-              <Text className="text-white text-lg font-semibold">
+            <View key={i} className="mb-4 last:mb-0">
+              <Text className="text-white text-lg font-semibold mb-1">
                 {item.term}
               </Text>
-              <Text className="text-[#c2c2c2] text-base">
+              <Text className="text-[#B0B0B0] text-base">
                 {item.definition}
               </Text>
             </View>
           ))}
         </View>
 
-        <View className="px-5 mt-8">
-          <Text className="text-white text-2xl font-bold mb-2">
-            📚 Recommended Reading
+        {/* Recommended Reading Section */}
+        <View className="bg-[#1A1A1A] rounded-3xl p-6 mb-6">
+          <Text className="text-2xl text-white font-bold mb-4 flex-row items-center">
+            <MaterialCommunityIcons name="bookmark-multiple" size={28} color="#4EA8DE" className="mr-2" />
+            Recommended Reading
           </Text>
           {guide?.recommended_reading?.map((article, i) => (
-            <Text
+            <TouchableOpacity
               key={i}
-              className="text-[#4ea8de] text-base mb-1"
               onPress={() => Linking.openURL(article.url)}
+              className="flex-row items-center mb-3 bg-[#252525] p-3 rounded-xl"
             >
-              • {article.title}
-            </Text>
+              <MaterialCommunityIcons name="link-variant" size={20} color="#4EA8DE" />
+              <Text className="text-[#4EA8DE] text-base ml-2 flex-1">
+                {article.title}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
 
-        <View className="border border-[#ff0000] bg-[#ef44447b] p-4 rounded-xl my-4">
+        <View className="border border-[#ff0000] bg-[#ef44447b] p-4 mb-10 rounded-xl my-4">
           <Text className="text-white font-medium text-lg">Denger zone</Text>
           <Text className="text-[#dbdbdb]">
             This action remove this content and it can not be undo.
